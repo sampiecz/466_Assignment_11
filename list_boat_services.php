@@ -57,12 +57,12 @@
             <table width="100%" border="50px" cellpadding="25%">
                 <tr>
                     <td>
-                        <h3>Service description to update</h3>
-                        <select name="serviceId">
+                        <h3>Boat name to update</h3>
+                        <select name="slipId">
     ';
  
     foreach( $boatNameRows as $row ):
-        echo '<option value="' . $row[ServiceID] . '" name="' . $row[Status] . '" >' . $row[Description] . '</option>';
+        echo '<option value="' . $row[SlipID] . '" name="' . $row[BoatName] . '" >' . $row[BoatName] . '</option>';
     endforeach;
 
     echo '
@@ -71,12 +71,12 @@
                 </tr>
                 <tr>
                     <td>
-                        <h3>Service description to update</h3>
-                        <select name="serviceId">
+                        <h3>Service category to update</h3>
+                        <select name="categoryNum">
     ';
  
-    foreach( $allrows as $row ):
-        echo '<option value="' . $row[ServiceID] . '" name="' . $row[Status] . '" >' . $row[Description] . '</option>';
+    foreach( $serviceCategoryRows as $row ):
+        echo '<option value="' . $row[CategoryNum] . '" name="' . $row[CategoryDescription] . '" >' . $row[CategoryDescription] . '</option>';
     endforeach;
 
     echo '
@@ -104,23 +104,23 @@
 
 if($_SERVER['REQUEST_METHOD'] == 'POST')
 {
-    $serviceId = trim($_POST['serviceId'] ?? '');
-
+    $slipId = trim($_POST['slipId'] ?? '');
+    $categoryNum = trim($_POST['categoryNum'] ?? '');
     $description = trim($_POST['description'] ?? '');
 
-    $newSql = "UPDATE ServiceRequest SET Description=:description WHERE ServiceID=:serviceId;";
+    $newSql = "INSERT INTO ServiceRequest ( SlipID, CategoryNum, Description ) VALUES(:slipId, :categoryNum, :description );";
 
     $prepared = $pdo->prepare($newSql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
  
-    $specificServiceRequest= $prepared->execute(array(':description' => $description, ':serviceId' => $serviceId));
+    $specificServiceRequest= $prepared->execute(array(':slipId' => $slipId, ':categoryNum' => $categoryNum, ':description' => $description));
 
     echo '
     <div width="100%">
         <table width="100%" border="50px" cellpadding="25%">
         <tr>
             <td>
-                <h3>ServiceID ' . $serviceId . ' Updated</h3>
-                <p>New Description: ' . $description . '</p>
+                <h3>SlipID ' . $slipId . ' created</h3>
+                <p>Service request description: ' . $description . '</p>
             </td>
         </tr>
     ';
