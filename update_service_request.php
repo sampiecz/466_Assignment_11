@@ -43,13 +43,14 @@
     $allrows = $result->fetchAll();
 
     # Output table first
-    echo '<div width="100%">
+    echo '
+    <div width="100%">
         <form action="/~z1732715/assign11/update_service_request.php" method="POST">
             <table width="100%" border="50px" cellpadding="25%">
                 <tr>
                     <td>
                         <h3>Service description to update</h3>
-                        <select name="name">
+                        <select name="serviceId">
     ';
  
     foreach( $allrows as $row ):
@@ -78,43 +79,35 @@
 
     ';
 
-#if($_SERVER['REQUEST_METHOD'] == 'POST')
-#{
-#    $ownerName = trim($_POST['name'] ?? '');
-#
-#    $newSql = " SELECT ms.BoatName
-#        FROM Owner o JOIN MarinaSlip ms ON o.OwnerNum = ms.OwnerNum
-#        WHERE o.LastName = '" . $ownerName . "' LIMIT 10;
-#    ";
-#
-#    $otherResult = $pdo->query($newSql);
-#    $allRequestedRows = $otherResult->fetchAll(PDO::FETCH_ASSOC);
-#
-#    # Output table first
-#    echo '<div width="100%">
-#            <table width="100%" border="50px" cellpadding="25%">
-#                <tr>
-#                    <td>
-#                        <div width="100%">
-#                            <h2>The owner you requested has the following boats:</h2>
-#                        </div>
-#                    </td>
-#                </tr>
-#    ';
-#     
-#    foreach( $allRequestedRows as $boat ):
-#            foreach( $boat as $boatName):
-#                echo '<tr><td>' . $boatName . '</td></tr>';
-#            endforeach;
-#        endforeach;
-#
-#        echo '
-#                </table>
-#              </div>
-#
-#        ';
+if($_SERVER['REQUEST_METHOD'] == 'POST')
+{
+    $serviceId = trim($_POST['serviceId'] ?? '');
 
-#} 
+    $description = trim($_POST['description'] ?? '');
+
+    $newSql = "UPDATE ServiceRequest SET Description=:description WHERE ServiceID=:serviceId;";
+
+    $prepared = $pdo->prepare($newSql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+ 
+    $specificServiceRequest= $prepared->execute(array(':description' => $description, ':serviceId' => $serviceId));
+
+    echo '
+    <div width="100%">
+        <table width="100%" border="50px" cellpadding="25%">
+        <tr>
+            <td>
+                <h3>ServiceID ' . $serviceId . ' Updated</h3>
+                <p>New Description: ' . $description . '</p>
+            </td>
+        </tr>
+    ';
+
+    echo '
+        </table>
+    </div>
+    ';  
+
+} 
 
 
 
