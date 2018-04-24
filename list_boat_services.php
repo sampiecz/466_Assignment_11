@@ -45,7 +45,7 @@
 
     # Output table first
     echo '<div width="100%">
-        <form action="/~z1732715/display_boat_service.php" method="post">
+        <form action="/~z1732715/assign11/list_boat_services.php" method="post">
             <table width="100%" border="50px" cellpadding="25%">
                 <tr>
                     <td>

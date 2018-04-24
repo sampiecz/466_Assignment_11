@@ -44,11 +44,11 @@
 
     # Output table first
     echo '<div width="100%">
-        <form action="/~z1732715/display_user_boats.php" method="POST">
+        <form action="/~z1732715/assign11/update_service_request.php" method="POST">
             <table width="100%" border="50px" cellpadding="25%">
                 <tr>
                     <td>
-                        <h2>Select a service request to update</h2>
+                        <h3>Service description to update</h3>
                         <select name="name">
     ';
  
@@ -58,10 +58,20 @@
 
     echo '
                         </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3>New service description</h3>
+                        <textarea type="text" name="description"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
                         <input type="submit" value="submit">
                         <input type="reset" value="reset">
                     </td>
-                <tr>
+                </tr>
             </table>
         </form>
       </div>
@@ -104,7 +114,7 @@
 #
 #        ';
 
-} 
+#} 
 
 
 
