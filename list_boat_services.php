@@ -30,17 +30,25 @@
 <!-- Get all Boat names, owner first and last names, the marina name and the slipname of that boat --> <?php
     
     # My query or sql statement 
-    $sql = "
-       SELECT * FROM Owner LIMIT 10; 
+    $boatNameSql = "
+        SELECT BoatName FROM MarinaSlip LIMIT 10; 
+    ";
+
+
+    # Second query
+    $serviceCategorySql = "
+        SELECT CategoryDescription FROM ServiceCategory;
     ";
 
     # The resutlt of passing that query to the db
-    $result = $pdo->query($sql);
+    $boatNameResult = $pdo->query($boatNameSql);
+    $serviceCategoryResult = $pdo->query($serviceCategorySql);
 
     # $row = $result->fetch(PDO::FETCH_BOTH);
 
     # The result of all the rows of that query
-    $allrows = $result->fetchAll();
+    $boatNameRows = $boatNameResult->fetchAll();
+    $serviceCategoryRows = $serviceCategoryResult->fetchAll();
 
     # Output table first
     echo '
@@ -49,38 +57,37 @@
             <table width="100%" border="50px" cellpadding="25%">
                 <tr>
                     <td>
-                        <h3>Enter owner last name</h3>
-                        <input type="text" placeholder="Enter owner last name" name="lastName"> 
+                        <h3>Service description to update</h3>
+                        <select name="serviceId">
+    ';
+ 
+    foreach( $boatNameRows as $row ):
+        echo '<option value="' . $row[ServiceID] . '" name="' . $row[Status] . '" >' . $row[Description] . '</option>';
+    endforeach;
+
+    echo '
+                        </select>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <h3>Enter owner first name</h3>
-                        <input type="text" placeholder="Enter owner first name" name="firstName"> 
+                        <h3>Service description to update</h3>
+                        <select name="serviceId">
+    ';
+ 
+    foreach( $allrows as $row ):
+        echo '<option value="' . $row[ServiceID] . '" name="' . $row[Status] . '" >' . $row[Description] . '</option>';
+    endforeach;
+
+    echo '
+                        </select>
                     </td>
                 </tr>
+
                 <tr>
                     <td>
-                        <h3>Enter owner address</h3>
-                        <input type="text" placeholder="Enter owner address" name="address"> 
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <h3>Enter owner city</h3>
-                        <input type="text" placeholder="Enter owner city" name="city"> 
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <h3>Enter owner state</h3>
-                        <input type="text" placeholder="Enter owner state" name="state"> 
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <h3>Enter owner zip</h3>
-                        <input type="text" placeholder="Enter owner zip" name="zip"> 
+                        <h3>New service description</h3>
+                        <textarea type="text" name="description"></textarea>
                     </td>
                 </tr>
                 <tr>
@@ -97,25 +104,25 @@
 
 if($_SERVER['REQUEST_METHOD'] == 'POST')
 {
-    $lastName = trim($_POST['serviceId'] ?? '');
-    $firstName = trim($_POST['firstName'] ?? '');
-    $address = trim($_POST['address'] ?? '');
-    $city = trim($_POST['city'] ?? '');
-    $state = trim($_POST['state'] ?? '');
-    $zip = trim($_POST['zip'] ?? '');
+    $serviceId = trim($_POST['serviceId'] ?? '');
 
-    $newSql = "INSERT INTO Owner (LastName, FirstName, Address, City, State, Zip) VALUES(:lastName, :firstName, :address, :city, :state, :zip)";
+    $description = trim($_POST['description'] ?? '');
+
+    $newSql = "UPDATE ServiceRequest SET Description=:description WHERE ServiceID=:serviceId;";
+
     $prepared = $pdo->prepare($newSql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-    $specificServiceRequest= $prepared->execute(array(':lastName' => $lastName, ':firstName' => $firstName, ':address' => $address, ':city' => $city, ':state' => $state, ':zip' => $zip));
+ 
+    $specificServiceRequest= $prepared->execute(array(':description' => $description, ':serviceId' => $serviceId));
 
     echo '
     <div width="100%">
         <table width="100%" border="50px" cellpadding="25%">
-            <tr>
-                <td>
-                    <h3>Owner ' . $firstName . ' ' . $lastName . ' added</h3>
-                </td>
-            </tr>
+        <tr>
+            <td>
+                <h3>ServiceID ' . $serviceId . ' Updated</h3>
+                <p>New Description: ' . $description . '</p>
+            </td>
+        </tr>
     ';
 
     echo '

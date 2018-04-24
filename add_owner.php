@@ -27,15 +27,12 @@
 ?>
 <!-- End Connect to the database -->
 
-<!-- Get all Boat names, owner first and last names, the marina name and the slipname of that boat -->
-<?php
+<!-- Get all Boat names, owner first and last names, the marina name and the slipname of that boat --> <?php
+    
     # My query or sql statement 
     $sql = "
-        SELECT ms.BoatName, o.LastName, o.FirstName, m.Name, ms.SlipNum 
-        FROM Owner o JOIN MarinaSlip ms JOIN Marina m ON o.OwnerNum = ms.OwnerNum AND ms.MarinaNum = m.MarinaNum
-        ORDER BY ms.BoatName, m.Name LIMIT 10;
+       SELECT * FROM Owner LIMIT 10; 
     ";
-
 
     # The resutlt of passing that query to the db
     $result = $pdo->query($sql);
@@ -44,37 +41,93 @@
 
     # The result of all the rows of that query
     $allrows = $result->fetchAll();
-    
+
     # Output table first
-    echo '<div width="100%">
+    echo '
+    <div width="100%">
+        <form action="/~z1732715/assign11/add_owner.php" method="POST">
             <table width="100%" border="50px" cellpadding="25%">
                 <tr>
-                    <th>Boat Name</th>
-                    <th>Owner Last Name</th>
-                    <th>Owner First Name</th>
-                    <th>Marina Name</th>
-                    <th>Marina Slip #</th>
+                    <td>
+                        <h3>Enter owner last name</h3>
+                        <input type="text" placeholder="Enter owner last name" name="lastName"> 
+                    </td>
+                </tr>
                 <tr>
+                    <td>
+                        <h3>Enter owner first name</h3>
+                        <input type="text" placeholder="Enter owner first name" name="firstName"> 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3>Enter owner address</h3>
+                        <input type="text" placeholder="Enter owner address" name="address"> 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3>Enter owner city</h3>
+                        <input type="text" placeholder="Enter owner city" name="city"> 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3>Enter owner state</h3>
+                        <input type="text" placeholder="Enter owner state" name="state"> 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3>Enter owner zip</h3>
+                        <input type="text" placeholder="Enter owner zip" name="zip"> 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="submit" value="submit">
+                        <input type="reset" value="reset">
+                    </td>
+                </tr>
+            </table>
+        </form>
+      </div>
+
     ';
 
+if($_SERVER['REQUEST_METHOD'] == 'POST')
+{
+    $lastName = trim($_POST['serviceId'] ?? '');
+    $firstName = trim($_POST['firstName'] ?? '');
+    $address = trim($_POST['address'] ?? '');
+    $city = trim($_POST['city'] ?? '');
+    $state = trim($_POST['state'] ?? '');
+    $zip = trim($_POST['zip'] ?? '');
 
-    # Generate table row for every row in the result of my query
-    foreach( $allrows as $row ):
-        echo "<tr>";
-        # Generate table data for each attribute's value in every row
-            echo "<td><center>" . $row["BoatName"] . "</center></td>";
-            echo "<td><center>" . $row["LastName"] . "</center></td>";
-            echo "<td><center>" . $row["FirstName"] . "</center></td>";
-            echo "<td><center>" . $row["Name"] . "</center></td>";
-            echo "<td><center>" . $row["SlipNum"] . "</center></td>";
-        echo "</tr>";
-    endforeach;
+    $newSql = "INSERT INTO Owner (LastName, FirstName, Address, City, State, Zip) VALUES(:lastName, :firstName, :address, :city, :state, :zip)";
+    $prepared = $pdo->prepare($newSql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+    $specificServiceRequest= $prepared->execute(array(':lastName' => $lastName, ':firstName' => $firstName, ':address' => $address, ':city' => $city, ':state' => $state, ':zip' => $zip));
 
-    # Close my html table as the query is done
-    echo "</table></div>";
+    echo '
+    <div width="100%">
+        <table width="100%" border="50px" cellpadding="25%">
+            <tr>
+                <td>
+                    <h3>Owner ' . $firstName . ' ' . $lastName . ' added</h3>
+                </td>
+            </tr>
+    ';
+
+    echo '
+        </table>
+    </div>
+    ';  
+
+} 
+
+
 
 ?>
-<!-- End DB query and html table -->
 
 
 <!-- Inlude the footer so I don't have to retype it every time -->
