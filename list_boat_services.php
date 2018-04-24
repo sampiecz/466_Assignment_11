@@ -27,12 +27,11 @@
 ?>
 <!-- End Connect to the database -->
 
-<!-- Get all Boat names, owner first and last names, the marina name and the slipname of that boat -->
-<?php
+<!-- Get all Boat names, owner first and last names, the marina name and the slipname of that boat --> <?php
     
     # My query or sql statement 
     $sql = "
-       SELECT BoatName, SlipID FROM MarinaSlip LIMIT 10; 
+       SELECT * FROM Owner LIMIT 10; 
     ";
 
     # The resutlt of passing that query to the db
@@ -44,69 +43,88 @@
     $allrows = $result->fetchAll();
 
     # Output table first
-    echo '<div width="100%">
-        <form action="/~z1732715/assign11/list_boat_services.php" method="post">
+    echo '
+    <div width="100%">
+        <form action="/~z1732715/assign11/list_boat_services.php" method="POST">
             <table width="100%" border="50px" cellpadding="25%">
                 <tr>
                     <td>
-                        <h2>Please select the owner name you want to see service slips for</h2>
-                        <select name="name">
-';
- 
-# Generate all options
-foreach( $allrows as $row ):
-    echo '<option value="' . $row[SlipID] . '" name="' . $row[BoatName] . '">' . $row[BoatName] . '</option>';
-endforeach;
-
-echo '
-                        </select>
-                        <input type="submit">
-                        <input type="reset">
+                        <h3>Enter owner last name</h3>
+                        <input type="text" placeholder="Enter owner last name" name="lastName"> 
                     </td>
+                </tr>
                 <tr>
+                    <td>
+                        <h3>Enter owner first name</h3>
+                        <input type="text" placeholder="Enter owner first name" name="firstName"> 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3>Enter owner address</h3>
+                        <input type="text" placeholder="Enter owner address" name="address"> 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3>Enter owner city</h3>
+                        <input type="text" placeholder="Enter owner city" name="city"> 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3>Enter owner state</h3>
+                        <input type="text" placeholder="Enter owner state" name="state"> 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h3>Enter owner zip</h3>
+                        <input type="text" placeholder="Enter owner zip" name="zip"> 
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="submit" value="submit">
+                        <input type="reset" value="reset">
+                    </td>
+                </tr>
             </table>
         </form>
       </div>
 
-';
+    ';
 
-# Check if user is posting form
 if($_SERVER['REQUEST_METHOD'] == 'POST')
 {
-    # Get the value the user posted
-    $realSlipID = trim($_POST['name']);
+    $lastName = trim($_POST['serviceId'] ?? '');
+    $firstName = trim($_POST['firstName'] ?? '');
+    $address = trim($_POST['address'] ?? '');
+    $city = trim($_POST['city'] ?? '');
+    $state = trim($_POST['state'] ?? '');
+    $zip = trim($_POST['zip'] ?? '');
 
-    # Sql to query for row user requested
-    $newSql = "
-        SELECT sr.Description FROM ServiceRequest sr, Owner o, MarinaSlip ms WHERE sr.SlipID = '" . $realSlipID . "' AND ms.OwnerNum = o.OwnerNum GROUP BY sr.Description LIMIT 10;
-    ";
+    $newSql = "INSERT INTO Owner (LastName, FirstName, Address, City, State, Zip) VALUES(:lastName, :firstName, :address, :city, :state, :zip)";
+    $prepared = $pdo->prepare($newSql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+    $specificServiceRequest= $prepared->execute(array(':lastName' => $lastName, ':firstName' => $firstName, ':address' => $address, ':city' => $city, ':state' => $state, ':zip' => $zip));
 
-    $otherResult = $pdo->query($newSql);
-    $allRequestedRows = $otherResult->fetchAll();
-
-    # Output table first
-    echo '<div width="100%">
-            <table width="100%" border="50px" cellpadding="25%">
-                <tr>
-                    <td>
-                        <div width="100%">
-                            <h2>The owner you requested has the following boats:</h2>
-                        </div>
-                    </td>
-                </tr>
+    echo '
+    <div width="100%">
+        <table width="100%" border="50px" cellpadding="25%">
+            <tr>
+                <td>
+                    <h3>Owner ' . $firstName . ' ' . $lastName . ' added</h3>
+                </td>
+            </tr>
     ';
-     
-        # Display the queries
-        foreach( $allRequestedRows as $boat ):
-            echo '<tr><td>' . $boat["Description"] . '</td></tr>';
-        endforeach;
 
-        echo '
-                </table>
-              </div>
+    echo '
+        </table>
+    </div>
+    ';  
 
-        ';
-}
+} 
+
 
 
 ?>
