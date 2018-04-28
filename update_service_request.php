@@ -70,7 +70,7 @@
                 <tr>
                     <td>
                         <input type="submit" value="submit">
-                        <input type="reset" value="reset">
+                        <input type="reset" value="reset" >
                     </td>
                 </tr>
             </table>
